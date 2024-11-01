@@ -22,4 +22,8 @@
         android:name="com.example.appsmarthome.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/deviceDetailFragment"
+        android:name="com.example.appsmarthome.ui.Fragment.DeviceDetailFragment"
+        android:label="DeviceDetailFragment" />
 </navigation>
