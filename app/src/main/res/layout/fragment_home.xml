@@ -23,7 +23,8 @@
 
         <!-- Thẻ thiết bị -->
         <!-- Thẻ thiết bị -->
-        <include layout="@layout/device_card" android:id="@+id/deviceCard1" />
+        <include layout="@layout/living_room_card" android:id="@+id/LivingRoom" />
+        <include layout="@layout/bedroom_card" android:id="@+id/deviceCard1" />
         <include layout="@layout/device_card" android:id="@+id/deviceCard2" />
         <include layout="@layout/device_card" android:id="@+id/deviceCard3" />
         <include layout="@layout/device_card" android:id="@+id/deviceCard4" />
