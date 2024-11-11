@@ -26,4 +26,9 @@
         android:id="@+id/deviceDetailFragment"
         android:name="com.example.appsmarthome.ui.Fragment.DeviceDetailFragment"
         android:label="DeviceDetailFragment" />
+    <fragment
+        android:id="@+id/livingFragment"
+        android:name="com.example.appsmarthome.LivingFragment"
+        android:label="fragment_living"
+        tools:layout="@layout/fragment_living" />
 </navigation>

@@ -33,6 +33,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        View LivingRoom = root.findViewById(R.id.LivingRoom);
         View deviceCard1 = root.findViewById(R.id.deviceCard1);
         View deviceCard2 = root.findViewById(R.id.deviceCard2);
         View deviceCard3 = root.findViewById(R.id.deviceCard3);
@@ -70,12 +71,20 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // Cập nhật trạng thái Switch lên Firebase khi người dùng thay đổi
-        switchLed.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            ledOnboardReference.setValue(isChecked); // Cập nhật trạng thái lên Firebase
-        });
+
 
         // Thiết lập onClick cho từng thẻ thiết bị để mở DeviceDetailFragment
+        LivingRoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = NavHostFragment.findNavController(HomeFragment.this);
+                Bundle bundle = new Bundle();
+                bundle.putString("device_name", "Living Room Device");
+                bundle.putString("device_description", "Mô tả chi tiết của thiết bị trong phòng khách.");
+
+                navController.navigate(R.id.livingFragment, bundle);
+            }
+        });
         deviceCard1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
