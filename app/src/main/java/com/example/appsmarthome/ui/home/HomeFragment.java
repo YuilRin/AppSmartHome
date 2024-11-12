@@ -35,9 +35,8 @@ public class HomeFragment extends Fragment {
 
         View LivingRoom = root.findViewById(R.id.LivingRoom);
         View deviceCard1 = root.findViewById(R.id.deviceCard1);
-        View deviceCard2 = root.findViewById(R.id.deviceCard2);
-        View deviceCard3 = root.findViewById(R.id.deviceCard3);
-        View deviceCard4 = root.findViewById(R.id.deviceCard4);
+
+
         TextView tvName= deviceCard1.findViewById(R.id.NameTB);
         tvName.setText("Led");
         switchLed = deviceCard1.findViewById(R.id.SwitchLed);
@@ -99,27 +98,7 @@ public class HomeFragment extends Fragment {
                 openDeviceDetailFragment("Thiết bị 1", "Mô tả chi tiết của thiết bị 1");
             }
         });
-        deviceCard2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Mở DeviceDetailFragment với NavController và truyền dữ liệu
-                openDeviceDetailFragment("Thiết bị 1", "Mô tả chi tiết của thiết bị 1");
-            }
-        });
-        deviceCard3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Mở DeviceDetailFragment với NavController và truyền dữ liệu
-                openDeviceDetailFragment("Thiết bị 1", "Mô tả chi tiết của thiết bị 1");
-            }
-        });
-        deviceCard4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Mở DeviceDetailFragment với NavController và truyền dữ liệu
-                openDeviceDetailFragment("Thiết bị 1", "Mô tả chi tiết của thiết bị 1");
-            }
-        });
+
 
         return root;
     }
