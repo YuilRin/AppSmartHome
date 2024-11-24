@@ -65,8 +65,8 @@
                     android:textColor="#757575"
                     android:textSize="14sp" />
 
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/SwitchLamb"
+                <Switch
+                    android:id="@+id/SwitchLedLivingRoom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -89,7 +89,7 @@
                     android:layout_gravity="center_vertical|start"
                     android:layout_weight="1"/>
 
-                <androidx.appcompat.widget.SwitchCompat
+                <Switch
                     android:id="@+id/SwitchFan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -36,13 +36,10 @@ public class HomeFragment extends Fragment {
         View LivingRoom = root.findViewById(R.id.LivingRoom);
         View deviceCard1 = root.findViewById(R.id.deviceCard1);
 
-
-        TextView tvName= deviceCard1.findViewById(R.id.NameTB);
-        tvName.setText("Led");
-        switchLed = deviceCard1.findViewById(R.id.SwitchLed);
+        switchLed = LivingRoom.findViewById(R.id.SwitchLedLivingRoom);
 
         // Tham chiếu đến LED/OnBoard trong Firebase Realtime Database
-        ledOnboardReference = FirebaseDatabase.getInstance().getReference("LED/OnBoard");
+        ledOnboardReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Living_Room");
 
         // Lắng nghe thay đổi từ Firebase để cập nhật Switch
         ledOnboardReference.addValueEventListener(new ValueEventListener() {
@@ -77,11 +74,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 NavController navController = NavHostFragment.findNavController(HomeFragment.this);
-                Bundle bundle = new Bundle();
-                bundle.putString("device_name", "Living Room Device");
-                bundle.putString("device_description", "Mô tả chi tiết của thiết bị trong phòng khách.");
 
-                navController.navigate(R.id.livingFragment, bundle);
+                navController.navigate(R.id.livingFragment);
             }
         });
         deviceCard1.setOnClickListener(new View.OnClickListener() {
