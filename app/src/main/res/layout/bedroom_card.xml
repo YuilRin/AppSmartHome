@@ -66,7 +66,7 @@
                     android:textSize="14sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/SwitchLamb"
+                    android:id="@+id/SwitchLambBedRoom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -90,9 +90,9 @@
                     android:layout_weight="1"/>
 
                 <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/SwitchFan"
+                    android:id="@+id/SwitchFanBedRoom"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="33dp"
                     android:layout_gravity="end"
                     android:checked="false" />
             </LinearLayout>

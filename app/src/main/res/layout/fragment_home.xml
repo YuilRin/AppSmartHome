@@ -24,9 +24,9 @@
         <!-- Thẻ thiết bị -->
         <!-- Thẻ thiết bị -->
         <include layout="@layout/living_room_card" android:id="@+id/LivingRoom" />
-        <include layout="@layout/bedroom_card" android:id="@+id/bedroom" />
-        <include layout="@layout/device_card" android:id="@+id/deviceCard1" />
-
+        <include layout="@layout/bedroom_card" android:id="@+id/BedRoom" />
+        <include layout="@layout/device_card" android:id="@+id/Door" />
+        <include layout="@layout/stair_card" android:id="@+id/Stair" />
 
 
     </LinearLayout>

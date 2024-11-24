@@ -38,7 +38,7 @@
                 android:id="@+id/NameTB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cửa tự động"
+                android:text="Khu vực cầu thang"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#000000" />
@@ -52,12 +52,11 @@
                 android:textColor="#757575" />
         </LinearLayout>
 
-        <!-- Nút bật/tắt thiết bị -->
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/SwitchDoor"
+            android:id="@+id/SwitchLedStair"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:checked="false" />
+            android:checked="false"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
