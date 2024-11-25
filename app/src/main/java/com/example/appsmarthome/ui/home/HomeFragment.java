@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -23,242 +24,162 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
-    private DatabaseReference led_LivingRoomReference;
-    private DatabaseReference led_BedRoomReference;
-    private DatabaseReference led_StairReference;
-    private DatabaseReference motor_LivingRoomReference;
-    private DatabaseReference motor_BedRoomReference;
 
-    private DatabaseReference DoorReference;
+    // Map lưu các Switch và DatabaseReference tương ứng
+    private final Map<SwitchCompat, DatabaseReference> switchMap = new HashMap<>();
+    private final Map<SwitchCompat, ValueEventListener> valueEventListenerMap = new HashMap<>();
 
-    private SwitchCompat switchLed_LR,switchLed_BR,switchLed_Stair,switchMotor_LR,switchMotor_BR,switchDoor;
     private boolean isUpdating = false;
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        // Ánh xạ các Switch và View
+        SwitchCompat switchLed_LR = root.findViewById(R.id.SwitchLedLivingRoom);
+        SwitchCompat switchLed_BR = root.findViewById(R.id.SwitchLambBedRoom);
+        SwitchCompat switchLed_Stair = root.findViewById(R.id.SwitchLedStair);
+        SwitchCompat switchMotor_LR = root.findViewById(R.id.SwitchFanLivingRoom);
+        SwitchCompat switchMotor_BR = root.findViewById(R.id.SwitchFanBedRoom);
+        SwitchCompat switchDoor = root.findViewById(R.id.SwitchDoor);
+
+        // Khởi tạo Firebase DatabaseReferences
+        DatabaseReference led_LivingRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Living_Room");
+        DatabaseReference led_BedRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Bed_Room");
+        DatabaseReference led_StairReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Stair_Light");
+        DatabaseReference motor_LivingRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/SYSTEM/Motor_Living_Room");
+        DatabaseReference motor_BedRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/SYSTEM/Motor_Bed_Room");
+        DatabaseReference doorReference = FirebaseDatabase.getInstance().getReference("ESP32/Door");
+
+        // Lưu vào map để xử lý chung
+        switchMap.put(switchLed_LR, led_LivingRoomReference);
+        switchMap.put(switchLed_BR, led_BedRoomReference);
+        switchMap.put(switchLed_Stair, led_StairReference);
+        switchMap.put(switchMotor_LR, motor_LivingRoomReference);
+        switchMap.put(switchMotor_BR, motor_BedRoomReference);
+        switchMap.put(switchDoor, doorReference);
+
+        // Thiết lập listener cho tất cả các switch
+        setupSwitchListeners();
 
         View LivingRoom = root.findViewById(R.id.LivingRoom);
         View BedRoom = root.findViewById(R.id.BedRoom);
         View Door = root.findViewById(R.id.Door);
         View Stair = root.findViewById(R.id.Stair);
 
-        switchLed_LR = LivingRoom.findViewById(R.id.SwitchLedLivingRoom);
-        switchLed_BR = BedRoom.findViewById(R.id.SwitchLambBedRoom);
-        switchLed_Stair = Stair.findViewById(R.id.SwitchLedStair);
-        switchMotor_LR = LivingRoom.findViewById(R.id.SwitchFanLivingRoom);
-        switchMotor_BR = BedRoom.findViewById(R.id.SwitchFanBedRoom);
-
-        switchDoor = Door.findViewById(R.id.SwitchDoor);
-
-        // Tham chiếu đến LED/OnBoard trong Firebase Realtime Database
-        led_LivingRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Living_Room");
-        led_BedRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Bed_Room");
-        led_StairReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Stair_Light");
-        motor_LivingRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/SYSTEM/Motor_Living_Room");
-        motor_BedRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/SYSTEM/Motor_Bed_Room");
-
-        DoorReference = FirebaseDatabase.getInstance().getReference("ESP32/Door");
-        //--------------------------------LedLivingRoom--------------------------------
-        // Lắng nghe thay đổi từ Firebase để cập nhật Switch
-        led_LivingRoomReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean switchState = snapshot.getValue(Boolean.class);
-                if (switchState != null) {
-                    Log.d("FirebaseData", "OnBoard value from Firebase: " + switchState);
-                    isUpdating = true; // Đặt cờ để biết rằng đây là thay đổi từ Firebase
-                    switchLed_LR.setChecked(switchState); // Cập nhật trạng thái của Switch
-                    isUpdating = false; // Đặt lại cờ
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý lỗiLog.e("FirebaseData", "Failed to read value.", error.toException());
-            }
-        });
-
-        // Cập nhật trạng thái Switch lên Firebase khi người dùng thay đổi
-        switchLed_LR.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!isUpdating) { // Chỉ cập nhật Firebase nếu thay đổi từ người dùng
-                led_LivingRoomReference.setValue(isChecked);
-            }
-        });
-
-
-        //--------------------------------LedBedRoom--------------------------------
-        // Lắng nghe thay đổi từ Firebase để cập nhật Switch
-        led_BedRoomReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean switchState = snapshot.getValue(Boolean.class);
-                if (switchState != null) {
-                    Log.d("FirebaseData", "OnBoard value from Firebase: " + switchState);
-                    isUpdating = true; // Đặt cờ để biết rằng đây là thay đổi từ Firebase
-                    switchLed_BR.setChecked(switchState); // Cập nhật trạng thái của Switch
-                    isUpdating = false; // Đặt lại cờ
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý lỗiLog.e("FirebaseData", "Failed to read value.", error.toException());
-            }
-        });
-
-        // Cập nhật trạng thái Switch lên Firebase khi người dùng thay đổi
-        switchLed_BR.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!isUpdating) { // Chỉ cập nhật Firebase nếu thay đổi từ người dùng
-                led_BedRoomReference.setValue(isChecked);
-            }
-        });
-
-        //--------------------------------Led Stair--------------------------------
-        // Lắng nghe thay đổi từ Firebase để cập nhật Switch
-        led_StairReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean switchState = snapshot.getValue(Boolean.class);
-                if (switchState != null) {
-                    Log.d("FirebaseData", "OnBoard value from Firebase: " + switchState);
-                    isUpdating = true; // Đặt cờ để biết rằng đây là thay đổi từ Firebase
-                    switchLed_Stair.setChecked(switchState); // Cập nhật trạng thái của Switch
-                    isUpdating = false; // Đặt lại cờ
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý lỗiLog.e("FirebaseData", "Failed to read value.", error.toException());
-            }
-        });
-
-        // Cập nhật trạng thái Switch lên Firebase khi người dùng thay đổi
-        switchLed_Stair.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!isUpdating) { // Chỉ cập nhật Firebase nếu thay đổi từ người dùng
-                led_StairReference.setValue(isChecked);
-            }
-        });
-
-        //--------------------------------Motor LivingRoom--------------------------------
-        // Lắng nghe thay đổi từ Firebase để cập nhật Switch
-        motor_LivingRoomReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean switchState = snapshot.getValue(Boolean.class);
-                if (switchState != null) {
-                    Log.d("FirebaseData", "OnBoard value from Firebase: " + switchState);
-                    isUpdating = true; // Đặt cờ để biết rằng đây là thay đổi từ Firebase
-                    switchMotor_LR.setChecked(switchState); // Cập nhật trạng thái của Switch
-                    isUpdating = false; // Đặt lại cờ
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý lỗiLog.e("FirebaseData", "Failed to read value.", error.toException());
-            }
-        });
-
-        // Cập nhật trạng thái Switch lên Firebase khi người dùng thay đổi
-        switchMotor_LR.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!isUpdating) { // Chỉ cập nhật Firebase nếu thay đổi từ người dùng
-                motor_LivingRoomReference.setValue(isChecked);
-            }
-        });
-
-        //--------------------------------Motor BedRoom--------------------------------
-        // Lắng nghe thay đổi từ Firebase để cập nhật Switch
-        motor_BedRoomReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean switchState = snapshot.getValue(Boolean.class);
-                if (switchState != null) {
-                    Log.d("FirebaseData", "OnBoard value from Firebase: " + switchState);
-                    isUpdating = true; // Đặt cờ để biết rằng đây là thay đổi từ Firebase
-                    switchMotor_BR.setChecked(switchState); // Cập nhật trạng thái của Switch
-                    isUpdating = false; // Đặt lại cờ
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý lỗiLog.e("FirebaseData", "Failed to read value.", error.toException());
-            }
-        });
-
-        // Cập nhật trạng thái Switch lên Firebase khi người dùng thay đổi
-        switchMotor_BR.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!isUpdating) { // Chỉ cập nhật Firebase nếu thay đổi từ người dùng
-                motor_BedRoomReference.setValue(isChecked);
-            }
-        });
-        //--------------------------------Door--------------------------------
-        // Lắng nghe thay đổi từ Firebase để cập nhật Switch
-        DoorReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean switchState = snapshot.getValue(Boolean.class);
-                if (switchState != null) {
-                    Log.d("FirebaseData", "OnBoard value from Firebase: " + switchState);
-                    isUpdating = true; // Đặt cờ để biết rằng đây là thay đổi từ Firebase
-                    switchDoor.setChecked(switchState); // Cập nhật trạng thái của Switch
-                    isUpdating = false; // Đặt lại cờ
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Xử lý lỗiLog.e("FirebaseData", "Failed to read value.", error.toException());
-            }
-        });
-
-        // Cập nhật trạng thái Switch lên Firebase khi người dùng thay đổi
-        switchDoor.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!isUpdating) { // Chỉ cập nhật Firebase nếu thay đổi từ người dùng
-                DoorReference.setValue(isChecked);
-            }
-        });
-
-
-
-
-
-
-        ////////////////////////////////////////////////////////////////////////////////////
-
+        ///////////////////////////////////////////
         // Thiết lập onClick cho từng thẻ thiết bị để mở DeviceDetailFragment
         LivingRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavController navController = NavHostFragment.findNavController(HomeFragment.this);
 
-                navController.navigate(R.id.livingFragment);
+                // Điều hướng đến LivingFragment và loại bỏ HomeFragment khỏi stack
+                navController.navigate(R.id.livingFragment, null,
+                        new NavOptions.Builder().setPopUpTo(R.id.nav_home, true).build());
             }
         });
-
-
         BedRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openDeviceDetailFragment("LED", "Thiết bị LED với chức năng OnBoard.");
+                NavController navController = NavHostFragment.findNavController(HomeFragment.this);
+
+                // Điều hướng đến LivingFragment và loại bỏ HomeFragment khỏi stack
+                navController.navigate(R.id.bedRoomFragment, null,
+                        new NavOptions.Builder().setPopUpTo(R.id.nav_home, true).build());
+            }
+        });
+        Door.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = NavHostFragment.findNavController(HomeFragment.this);
+
+                // Điều hướng đến LivingFragment và loại bỏ HomeFragment khỏi stack
+                navController.navigate(R.id.doorFragment, null,
+                        new NavOptions.Builder().setPopUpTo(R.id.nav_home, true).build());
+            }
+        });
+        Stair.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = NavHostFragment.findNavController(HomeFragment.this);
+
+                // Điều hướng đến LivingFragment và loại bỏ HomeFragment khỏi stack
+                navController.navigate(R.id.stairFragment, null,
+                        new NavOptions.Builder().setPopUpTo(R.id.nav_home, true).build());
             }
         });
 
-        Stair.setOnClickListener(new View.OnClickListener() {
+
+
+        /*BedRoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = NavHostFragment.findNavController(HomeFragment.this);
+                navController.navigate(R.id.bedRoomFragment);
+            }
+        });*/
+
+        /*Stair.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Mở DeviceDetailFragment với NavController và truyền dữ liệu
                 openDeviceDetailFragment("Thiết bị 1", "Mô tả chi tiết của thiết bị 1");
             }
-        });
-
+        });  */
 
         return root;
+    }
+    private void setupSwitchListeners() {
+        // Thêm listener mới
+        for (Map.Entry<SwitchCompat, DatabaseReference> entry : switchMap.entrySet()) {
+            SwitchCompat switchCompat = entry.getKey();
+            DatabaseReference reference = entry.getValue();
+
+            ValueEventListener valueEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Boolean switchState = snapshot.getValue(Boolean.class);
+                    if (switchState != null) {
+                        isUpdating = true; // Để tránh vòng lặp vô hạn
+                        switchCompat.setChecked(switchState);
+                        isUpdating = false;
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("FirebaseError", "Failed to read value.", error.toException());
+                }
+            };
+
+            // Lưu ValueEventListener để có thể xóa sau này
+            valueEventListenerMap.put(switchCompat, valueEventListener);
+
+            // Lắng nghe dữ liệu từ Firebase
+            reference.addValueEventListener(valueEventListener);
+
+            // Lắng nghe thay đổi từ người dùng
+            switchCompat.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (!isUpdating) {
+                    reference.setValue(isChecked); // Cập nhật Firebase khi có thay đổi từ người dùng
+                }
+            });
+        }
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+
     }
 
     private void openDeviceDetailFragment(String deviceName, String deviceDescription) {
@@ -272,8 +193,45 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    public void onResume() {
+        super.onResume();
+        // Lấy lại trạng thái từ Firebase khi quay lại fragment
+        for (Map.Entry<SwitchCompat, DatabaseReference> entry : switchMap.entrySet()) {
+            SwitchCompat switchCompat = entry.getKey();
+            DatabaseReference reference = entry.getValue();
+
+            // Kiểm tra lại giá trị từ Firebase và cập nhật lại trạng thái của switch
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Boolean switchState = snapshot.getValue(Boolean.class);
+
+                        switchCompat.setChecked(switchState);
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("FirebaseError", "Failed to read value.", error.toException());
+                }
+            });
+        }
+
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Hủy bỏ tất cả các ValueEventListener khi fragment bị tạm dừng để tránh rò rỉ bộ nhớ
+        for (Map.Entry<SwitchCompat, ValueEventListener> entry : valueEventListenerMap.entrySet()) {
+            SwitchCompat switchCompat = entry.getKey();
+            ValueEventListener valueEventListener = entry.getValue();
+            DatabaseReference reference = switchMap.get(switchCompat);
+            reference.removeEventListener(valueEventListener);
+        }
+        valueEventListenerMap.clear();
+
+    }
+
 }

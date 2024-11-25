@@ -14,7 +14,7 @@
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/logo"
+            android:src="@drawable/garage"
             android:layout_gravity="center_vertical"
             android:contentDescription="Device Icon" />
 

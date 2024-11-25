@@ -23,10 +23,10 @@
 
         <!-- Thẻ thiết bị -->
         <!-- Thẻ thiết bị -->
-        <include layout="@layout/living_room_card" android:id="@+id/LivingRoom" />
-        <include layout="@layout/bedroom_card" android:id="@+id/BedRoom" />
-        <include layout="@layout/device_card" android:id="@+id/Door" />
-        <include layout="@layout/stair_card" android:id="@+id/Stair" />
+        <include layout="@layout/card_living_room" android:id="@+id/LivingRoom" />
+        <include layout="@layout/card_bedroom" android:id="@+id/BedRoom" />
+        <include layout="@layout/card_door" android:id="@+id/Door" />
+        <include layout="@layout/card_stair" android:id="@+id/Stair" />
 
 
     </LinearLayout>

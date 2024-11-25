@@ -2,33 +2,27 @@ package com.example.appsmarthome.ui.Fragment;
 
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
-import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.appsmarthome.R;
-import com.example.appsmarthome.ui.home.HomeFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class LivingFragment extends Fragment {
+
+public class BedRoomFragment extends Fragment {
 
     private DatabaseReference ledOnboardReference,motor_LivingRoomReference;
     private SwitchCompat switchLed,switchMotor_LR;
@@ -37,7 +31,7 @@ public class LivingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_living, container, false);
+        View view = inflater.inflate(R.layout.fragment_bed_room, container, false);
 
         if (getActivity() != null) {
             ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -52,11 +46,11 @@ public class LivingFragment extends Fragment {
         tvName.setText("Led");
 
         switchLed = view.findViewById(R.id.SwitchLed);
-        switchMotor_LR= view.findViewById(R.id.SwitchFan);
+        switchMotor_LR= view.findViewById(R.id.SwitchFan2);
 
         // Tham chiếu đến LED/OnBoard trong Firebase Realtime Database
-        ledOnboardReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Living_Room");
-        motor_LivingRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/SYSTEM/Motor_Living_Room");
+        ledOnboardReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Bed_Room");
+        motor_LivingRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/SYSTEM/Motor_Bed_Room");
 
         // Lắng nghe thay đổi từ Firebase để cập nhật Switch
         ledOnboardReference.addValueEventListener(new ValueEventListener() {

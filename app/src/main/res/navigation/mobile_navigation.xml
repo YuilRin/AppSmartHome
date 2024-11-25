@@ -31,4 +31,24 @@
         android:name="com.example.appsmarthome.ui.Fragment.LivingFragment"
         android:label="Phòng khách"
         tools:layout="@layout/fragment_living" />
+    <fragment
+        android:id="@+id/bedRoomFragment"
+        android:name="com.example.appsmarthome.ui.Fragment.BedRoomFragment"
+        android:label="fragment_bed_room"
+        tools:layout="@layout/fragment_bed_room" />
+    <action
+        android:id="@+id/action_livingFragment_to_homeFragment"
+        app:destination="@id/nav_home"
+        app:popUpTo="@id/nav_home"
+        app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/doorFragment"
+        android:name="com.example.appsmarthome.ui.Fragment.DoorFragment"
+        android:label="DoorFragment" />
+    <fragment
+        android:id="@+id/stairFragment"
+        android:name="com.example.appsmarthome.ui.Fragment.StairFragment"
+        android:label="fragment_stair"
+        tools:layout="@layout/fragment_stair" />
+
 </navigation>

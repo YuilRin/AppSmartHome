@@ -16,7 +16,7 @@
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:background="@drawable/border_background"
-            android:src="@drawable/livingkit"
+            android:src="@drawable/garage"
             android:scaleType="centerCrop"
             android:clipToOutline="true"
             android:layout_gravity="center" />
@@ -36,7 +36,7 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="Device Icon"
-                android:src="@drawable/led_8368754" />
+                android:src="@drawable/door" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -56,7 +56,7 @@
                     android:id="@+id/NameTB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Đèn"
+                    android:text="Door"
                     android:textColor="#000000"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -70,62 +70,7 @@
             </LinearLayout>
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/SwitchLed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:checked="false" />
-        </LinearLayout>
-
-        <!-- Thiết bị 2 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="#95FFFFFF"
-            android:padding="16dp"
-            android:layout_marginTop="16dp">
-
-            <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="Device Icon"
-                android:src="@drawable/fan_1090676" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingStart="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Kết nối wi-fi"
-                    android:textColor="#757575"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/NameTB2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Quạt"
-                    android:textColor="#000000"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mô tả thiết bị hoặc trạng thái của thiết bị"
-                    android:textColor="#757575"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/SwitchFan"
+                android:id="@+id/Switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

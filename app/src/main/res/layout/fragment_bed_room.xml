@@ -16,10 +16,9 @@
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:background="@drawable/border_background"
-            android:src="@drawable/livingkit"
+            android:layout_gravity="center_horizontal"
             android:scaleType="centerCrop"
-            android:clipToOutline="true"
-            android:layout_gravity="center" />
+            android:src="@drawable/bed" />
 
         <!-- Thiết bị 1 -->
         <LinearLayout
@@ -125,11 +124,12 @@
             </LinearLayout>
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/SwitchFan"
+                android:id="@+id/SwitchFan2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:checked="false" />
         </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
