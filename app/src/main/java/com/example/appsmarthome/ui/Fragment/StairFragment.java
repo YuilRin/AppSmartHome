@@ -39,6 +39,7 @@ public class StairFragment extends Fragment {
     private DatabaseReference Reference;
     private SwitchCompat switchDoor,switchMotor_LR;
     private boolean isUpdating = false;
+    private Button SetLedOn,SetLedOff;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -53,6 +54,9 @@ public class StairFragment extends Fragment {
             }
         }
         switchDoor = view.findViewById(R.id.Switch);
+        SetLedOn = view.findViewById(R.id.btn_StairLED_On);
+        SetLedOff = view.findViewById(R.id.btn_StairLED_Off);
+
         // Tham chiếu đến LED/OnBoard trong Firebase Realtime Database
         Reference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Stair_Light");
         // Lắng nghe thay đổi từ Firebase để cập nhật Switch
@@ -81,8 +85,8 @@ public class StairFragment extends Fragment {
             }
         });
 
-        Button button = view.findViewById(R.id.button_show_time_input_stair);
-        button.setOnClickListener(v -> {
+
+        SetLedOn.setOnClickListener(v -> {
             Data inputData = new Data.Builder()
                     .putString("database_path", "ESP8266/LED/Stair_Light") // Địa chỉ Firebase
                     .build();
@@ -104,6 +108,31 @@ public class StairFragment extends Fragment {
                         workRequest);
             });
         });
+        SetLedOff.setOnClickListener(v -> {
+            Data inputData = new Data.Builder()
+                    .putString("database_path", "ESP8266/LED/Stair_Light")
+                    .putBoolean("value_to_update", false)// Địa chỉ Firebase
+                    .build();
+            // Gọi dialog từ helper class
+            TimePickerDialogHelper.showTimePickerDialog(getContext(), (hours, minutes) -> {
+                // Xử lý kết quả giờ và phút
+                long initialDelay = calculateInitialDelay(hours, minutes);
+                Log.d("Time Input", "Hours: " + hours + ", Minutes: " + minutes + ", Initial Delay: " + initialDelay);
+
+                // Tiến hành enqueue work request với thời gian delay tính được
+                OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                        .setInputData(inputData)
+                        .build();
+
+                WorkManager.getInstance(requireActivity()).enqueueUniqueWork(
+                        "LedStairWork", // Tên công việc
+                        ExistingWorkPolicy.REPLACE, // Thay thế công việc cũ nếu đã có
+                        workRequest);
+            });
+        });
+
+
         Button back=view.findViewById(R.id.buttonBack);
         back.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);

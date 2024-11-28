@@ -39,6 +39,7 @@ public class BedRoomFragment extends Fragment {
     private DatabaseReference ledOnboardReference,motor_LivingRoomReference;
     private SwitchCompat switchLed,switchMotor_LR;
     private boolean isUpdating = false;
+    private Button SetLedOn,SetLedOff,SetFanOn,SetFanOff;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -61,6 +62,10 @@ public class BedRoomFragment extends Fragment {
 
         switchLed = view.findViewById(R.id.SwitchLed2);
         switchMotor_LR= view.findViewById(R.id.SwitchFan2);
+        SetLedOn = view.findViewById(R.id.btn_BedLED_On);
+        SetLedOff = view.findViewById(R.id.btn_BedLED_Off);
+        SetFanOn = view.findViewById(R.id.btn_BedFAN_On);
+        SetFanOff = view.findViewById(R.id.btn_BedFAN_Off);
 
         // Tham chiếu đến LED/OnBoard trong Firebase Realtime Database
         ledOnboardReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Bed_Room");
@@ -118,8 +123,11 @@ public class BedRoomFragment extends Fragment {
                 motor_LivingRoomReference.setValue(isChecked);
             }
         });
-        Button button = view.findViewById(R.id.button_show_time_input_led_bed);
-        button.setOnClickListener(v -> {
+
+
+
+
+        SetLedOn.setOnClickListener(v -> {
             Data inputData = new Data.Builder()
                     .putString("database_path", "ESP8266/LED/Bed_Room") // Địa chỉ Firebase
                     .build();
@@ -141,8 +149,8 @@ public class BedRoomFragment extends Fragment {
                         workRequest);
             });
         });
-        Button button2 = view.findViewById(R.id.button_show_time_input_bed_fan);
-        button2.setOnClickListener(v -> {
+
+        SetFanOn.setOnClickListener(v -> {
             Data inputData = new Data.Builder()
                     .putString("database_path", "ESP8266/SYSTEM/Motor_Bed_Room") // Địa chỉ Firebase
                     .build();
@@ -160,6 +168,53 @@ public class BedRoomFragment extends Fragment {
 
                 WorkManager.getInstance(requireActivity()).enqueueUniqueWork(
                         "FanBedWork", // Tên công việc
+                        ExistingWorkPolicy.REPLACE, // Thay thế công việc cũ nếu đã có
+                        workRequest);
+            });
+        });
+        SetLedOff.setOnClickListener(v -> {
+            Data inputData = new Data.Builder()
+                    .putString("database_path", "ESP8266/LED/Bed_Room") // Địa chỉ Firebase
+                    .putBoolean("value_to_update", false)
+                    .build();
+            // Gọi dialog từ helper class
+            TimePickerDialogHelper.showTimePickerDialog(getContext(), (hours, minutes) -> {
+                // Xử lý kết quả giờ và phút
+                long initialDelay = calculateInitialDelay(hours, minutes);
+                Log.d("Time Input", "Hours: " + hours + ", Minutes: " + minutes + ", Initial Delay: " + initialDelay);
+
+                // Tiến hành enqueue work request với thời gian delay tính được
+                OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                        .setInputData(inputData)
+                        .build();
+
+                WorkManager.getInstance(requireActivity()).enqueueUniqueWork(
+                        "LedLivingWork", // Tên công việc
+                        ExistingWorkPolicy.REPLACE, // Thay thế công việc cũ nếu đã có
+                        workRequest);
+            });
+        });
+
+        SetFanOff.setOnClickListener(v -> {
+            Data inputData = new Data.Builder()
+                    .putString("database_path", "ESP8266/SYSTEM/Motor_Bed_Room") // Địa chỉ Firebase
+                    .putBoolean("value_to_update", false)
+                    .build();
+            // Gọi dialog từ helper class
+            TimePickerDialogHelper.showTimePickerDialog(getContext(), (hours, minutes) -> {
+                // Xử lý kết quả giờ và phút
+                long initialDelay = calculateInitialDelay(hours, minutes);
+                Log.d("Time Input", "Hours: " + hours + ", Minutes: " + minutes + ", Initial Delay: " + initialDelay);
+
+                // Tiến hành enqueue work request với thời gian delay tính được
+                OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                        .setInputData(inputData)
+                        .build();
+
+                WorkManager.getInstance(requireActivity()).enqueueUniqueWork(
+                        "FanLivingWork", // Tên công việc
                         ExistingWorkPolicy.REPLACE, // Thay thế công việc cũ nếu đã có
                         workRequest);
             });

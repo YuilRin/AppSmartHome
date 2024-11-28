@@ -15,8 +15,9 @@ public class MyWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        // Lấy địa chỉ từ inputData
+        // Lấy địa chỉ và giá trị boolean từ inputData
         String databasePath = getInputData().getString("database_path");
+        boolean valueToUpdate = getInputData().getBoolean("value_to_update", true); // Mặc định là true nếu không có giá trị
 
         if (databasePath == null) {
             Log.e("MyWorker", "Database path is null");
@@ -26,7 +27,7 @@ public class MyWorker extends Worker {
         // Thực hiện cập nhật giá trị trong Firebase Realtime Database
         try {
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference(databasePath);
-            reference.setValue(true) // Đặt giá trị là true
+            reference.setValue(valueToUpdate) // Đặt giá trị từ inputData
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Log.d("Firebase", "Value updated successfully at: " + databasePath);
@@ -41,4 +42,5 @@ public class MyWorker extends Worker {
             return Result.failure();
         }
     }
+
 }
