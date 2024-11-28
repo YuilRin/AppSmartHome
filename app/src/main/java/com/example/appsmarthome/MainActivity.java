@@ -3,6 +3,7 @@ package com.example.appsmarthome;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,9 +66,21 @@ public class MainActivity extends AppCompatActivity {
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show();
+                // Tạo Intent gửi email
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+                emailIntent.setData(Uri.parse("mailto:"));  // Đặt địa chỉ mailto
+
+                // Thiết lập địa chỉ người nhận, chủ đề và nội dung
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"22520762@gm.uit.edu.vn"});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject of the email");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Body of the email");
+
+                // Kiểm tra xem có ứng dụng email nào để xử lý không
+                if (emailIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(emailIntent);  // Mở ứng dụng gửi email
+                } else {
+                    Snackbar.make(view, "No email app available", Snackbar.LENGTH_LONG).show();
+                }
             }
         });
         DrawerLayout drawer = binding.drawerLayout;
