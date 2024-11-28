@@ -5,6 +5,7 @@
     android:background="#B3E5FC"
     android:padding="16dp">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -76,5 +77,16 @@
                 android:layout_gravity="center_vertical"
                 android:checked="false" />
         </LinearLayout>
+        <Button
+            android:id="@+id/button_change_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Đổi mật khẩu" />
+        <Button
+            android:id="@+id/buttonBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Back" />
     </LinearLayout>
 </ScrollView>

@@ -119,6 +119,13 @@ public class LivingFragment extends Fragment {
                 motor_LivingRoomReference.setValue(isChecked);
             }
         });
+        Button back=view.findViewById(R.id.buttonBack);
+        back.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.nav_home);
+        });
+
+
 
         Button button = view.findViewById(R.id.button_show_time_input);
         button.setOnClickListener(v -> {

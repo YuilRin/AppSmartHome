@@ -8,6 +8,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -101,6 +103,11 @@ public class StairFragment extends Fragment {
                         ExistingWorkPolicy.REPLACE, // Thay thế công việc cũ nếu đã có
                         workRequest);
             });
+        });
+        Button back=view.findViewById(R.id.buttonBack);
+        back.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.nav_home);
         });
         return view;
     }

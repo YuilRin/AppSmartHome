@@ -1,5 +1,6 @@
 package com.example.appsmarthome.ui.Fragment;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -7,12 +8,17 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.appsmarthome.R;
 import com.google.firebase.database.DataSnapshot;
@@ -24,7 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class DoorFragment extends Fragment {
 
-    private DatabaseReference Reference;
+    private DatabaseReference Reference,passwordReference;
     private SwitchCompat switchDoor,switchMotor_LR;
     private boolean isUpdating = false;
 
@@ -41,9 +47,10 @@ public class DoorFragment extends Fragment {
             }
         }
         switchDoor = view.findViewById(R.id.Switch);
-        // Tham chiếu đến LED/OnBoard trong Firebase Realtime Database
+
         Reference = FirebaseDatabase.getInstance().getReference("ESP32/Door");
-        // Lắng nghe thay đổi từ Firebase để cập nhật Switch
+        passwordReference = FirebaseDatabase.getInstance().getReference("ESP32/Password/Key");
+
         Reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -69,9 +76,71 @@ public class DoorFragment extends Fragment {
             }
         });
 
+        Button back=view.findViewById(R.id.buttonBack);
+        back.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.nav_home);
+        });
 
+
+        Button btnChangePassword = view.findViewById(R.id.button_change_password);
+        btnChangePassword.setOnClickListener(v -> showPasswordDialog());
         return view;
 
+    }private void showPasswordDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_change_password, null);
+        EditText etCurrentPassword = dialogView.findViewById(R.id.et_current_password);
+        EditText etNewPassword = dialogView.findViewById(R.id.et_new_password);
+        EditText etConfirmPassword = dialogView.findViewById(R.id.et_confirm_password);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Đổi mật khẩu");
+        builder.setView(dialogView);
+
+        builder.setPositiveButton("Xác nhận", (dialog, which) -> {
+            String currentPassword = etCurrentPassword.getText().toString().trim();
+            String newPassword = etNewPassword.getText().toString().trim();
+            String confirmPassword = etConfirmPassword.getText().toString().trim();
+
+            if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
+                Toast.makeText(requireContext(), "Vui lòng nhập đủ thông tin!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!newPassword.equals(confirmPassword)) {
+                Toast.makeText(requireContext(), "Mật khẩu mới không khớp!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Kiểm tra mật khẩu hiện tại trên Firebase
+            passwordReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String storedPassword = snapshot.getValue(String.class);
+                    if (storedPassword != null && storedPassword.equals(currentPassword)) {
+                        // Cập nhật mật khẩu mới
+                        passwordReference.setValue(newPassword).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(requireContext(), "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(requireContext(), "Đổi mật khẩu thất bại!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(requireContext(), "Mật khẩu hiện tại không đúng!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(requireContext(), "Lỗi Firebase: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
+
 
 }
