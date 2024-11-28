@@ -1,5 +1,6 @@
 package com.example.appsmarthome.ui.Fragment;
 
+import android.icu.util.Calendar;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -11,22 +12,31 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.appsmarthome.R;
+import com.example.appsmarthome.WorkerClass.MyWorker;
+import com.example.appsmarthome.WorkerClass.TimePickerDialogHelper;
 import com.example.appsmarthome.ui.home.HomeFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.concurrent.TimeUnit;
 
 public class LivingFragment extends Fragment {
 
@@ -46,7 +56,6 @@ public class LivingFragment extends Fragment {
                 actionBar.setHomeButtonEnabled(false); // Vô hiệu hóa chức năng nút back
             }
         }
-
 
         TextView tvName= view.findViewById(R.id.NameTB);
         tvName.setText("Led");
@@ -111,9 +120,70 @@ public class LivingFragment extends Fragment {
             }
         });
 
+        Button button = view.findViewById(R.id.button_show_time_input);
+        button.setOnClickListener(v -> {
+            Data inputData = new Data.Builder()
+                    .putString("database_path", "ESP8266/LED/Living_Room") // Địa chỉ Firebase
+                    .build();
+            // Gọi dialog từ helper class
+            TimePickerDialogHelper.showTimePickerDialog(getContext(), (hours, minutes) -> {
+                // Xử lý kết quả giờ và phút
+                long initialDelay = calculateInitialDelay(hours, minutes);
+                Log.d("Time Input", "Hours: " + hours + ", Minutes: " + minutes + ", Initial Delay: " + initialDelay);
+
+                // Tiến hành enqueue work request với thời gian delay tính được
+                OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                        .setInputData(inputData)
+                        .build();
+
+                WorkManager.getInstance(requireActivity()).enqueueUniqueWork(
+                        "LedLivingWork", // Tên công việc
+                        ExistingWorkPolicy.REPLACE, // Thay thế công việc cũ nếu đã có
+                        workRequest);
+            });
+        });
+        Button button2 = view.findViewById(R.id.button_show_time_input2);
+        button2.setOnClickListener(v -> {
+            Data inputData = new Data.Builder()
+                    .putString("database_path", "ESP8266/SYSTEM/Motor_Living_Room") // Địa chỉ Firebase
+                    .build();
+            // Gọi dialog từ helper class
+            TimePickerDialogHelper.showTimePickerDialog(getContext(), (hours, minutes) -> {
+                // Xử lý kết quả giờ và phút
+                long initialDelay = calculateInitialDelay(hours, minutes);
+                Log.d("Time Input", "Hours: " + hours + ", Minutes: " + minutes + ", Initial Delay: " + initialDelay);
+
+                // Tiến hành enqueue work request với thời gian delay tính được
+                OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                        .setInputData(inputData)
+                        .build();
+
+                WorkManager.getInstance(requireActivity()).enqueueUniqueWork(
+                        "FanLivingWork", // Tên công việc
+                        ExistingWorkPolicy.REPLACE, // Thay thế công việc cũ nếu đã có
+                        workRequest);
+            });
+        });
+
 
         return view;
 
+    }
+    private long calculateInitialDelay(int hours, int minutes) {
+        Calendar currentDate = Calendar.getInstance();
+        Calendar targetDate = Calendar.getInstance();
+
+        targetDate.set(Calendar.HOUR_OF_DAY, hours);
+        targetDate.set(Calendar.MINUTE, minutes);
+        targetDate.set(Calendar.SECOND, 0);  // Đặt giây bằng 0
+
+        if (currentDate.after(targetDate)) {
+            targetDate.add(Calendar.DATE, 1);  // Chuyển sang ngày hôm sau
+        }
+
+        return targetDate.getTimeInMillis() - currentDate.getTimeInMillis();
     }
 
 }

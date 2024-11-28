@@ -18,6 +18,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -37,14 +39,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         long initialDelay = calculateInitialDelay();
+        WorkManager.getInstance(this).cancelAllWork();
 
         // Create OneTimeWorkRequest with the calculated initial delay
-        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
-                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+        Data inputData = new Data.Builder()
+                .putString("database_path", "ESP8266/LED/Living_Room") // Địa chỉ Firebase
                 .build();
 
-        // Enqueue the work request
-        WorkManager.getInstance(this).enqueue(workRequest);  // Use 'this' to refer to the context
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                .setInputData(inputData)
+                .build();
+
+// Enqueue the work request
+        WorkManager.getInstance(this).enqueueUniqueWork(
+                "uniqueWork", // Tên công việc
+                ExistingWorkPolicy.REPLACE, // Thay thế công việc cũ nếu đã có
+                workRequest);// Use 'this' to refer to the context
 
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -115,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         Calendar targetDate = Calendar.getInstance();
 
         // Đặt thời gian mục tiêu là 6 PM
-        targetDate.set(Calendar.HOUR_OF_DAY, 18);
+        targetDate.set(Calendar.HOUR_OF_DAY, 12);
         targetDate.set(Calendar.MINUTE, 0);
         targetDate.set(Calendar.SECOND, 0);
 

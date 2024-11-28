@@ -205,11 +205,8 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     Boolean switchState = snapshot.getValue(Boolean.class);
-
                         switchCompat.setChecked(switchState);
-
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Log.e("FirebaseError", "Failed to read value.", error.toException());
