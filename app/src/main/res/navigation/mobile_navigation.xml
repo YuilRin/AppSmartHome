@@ -34,7 +34,7 @@
     <fragment
         android:id="@+id/bedRoomFragment"
         android:name="com.example.appsmarthome.ui.Fragment.BedRoomFragment"
-        android:label="fragment_bed_room"
+        android:label="Phòng ngủ"
         tools:layout="@layout/fragment_bed_room" />
     <action
         android:id="@+id/action_livingFragment_to_homeFragment"
@@ -44,11 +44,11 @@
     <fragment
         android:id="@+id/doorFragment"
         android:name="com.example.appsmarthome.ui.Fragment.DoorFragment"
-        android:label="DoorFragment" />
+        android:label="Door" />
     <fragment
         android:id="@+id/stairFragment"
         android:name="com.example.appsmarthome.ui.Fragment.StairFragment"
-        android:label="fragment_stair"
+        android:label="Stair"
         tools:layout="@layout/fragment_stair" />
 
 </navigation>

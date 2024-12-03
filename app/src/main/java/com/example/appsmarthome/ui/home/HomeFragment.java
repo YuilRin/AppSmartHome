@@ -1,5 +1,10 @@
 package com.example.appsmarthome.ui.home;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
@@ -24,7 +30,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class HomeFragment extends Fragment {
@@ -40,6 +49,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        setupAlertListener();
 
         // Ánh xạ các Switch và View
         SwitchCompat switchLed_LR = root.findViewById(R.id.SwitchLedLivingRoom);
@@ -47,15 +57,28 @@ public class HomeFragment extends Fragment {
         SwitchCompat switchLed_Stair = root.findViewById(R.id.SwitchLedStair);
         SwitchCompat switchMotor_LR = root.findViewById(R.id.SwitchFanLivingRoom);
         SwitchCompat switchMotor_BR = root.findViewById(R.id.SwitchFanBedRoom);
-        SwitchCompat switchDoor = root.findViewById(R.id.SwitchDoor);
 
         // Khởi tạo Firebase DatabaseReferences
-        DatabaseReference led_LivingRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Living_Room");
-        DatabaseReference led_BedRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Bed_Room");
-        DatabaseReference led_StairReference = FirebaseDatabase.getInstance().getReference("ESP8266/LED/Stair_Light");
-        DatabaseReference motor_LivingRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/SYSTEM/Motor_Living_Room");
-        DatabaseReference motor_BedRoomReference = FirebaseDatabase.getInstance().getReference("ESP8266/SYSTEM/Motor_Bed_Room");
-        DatabaseReference doorReference = FirebaseDatabase.getInstance().getReference("ESP32/Door");
+        DatabaseReference
+                led_LivingRoomReference =
+                FirebaseDatabase.getInstance()
+                        .getReference("ESP8266/LED/Living_Room");
+        DatabaseReference
+                led_BedRoomReference =
+                FirebaseDatabase.getInstance()
+                        .getReference("ESP8266/LED/Bed_Room");
+        DatabaseReference
+                led_StairReference =
+                FirebaseDatabase.getInstance()
+                        .getReference("ESP8266/LED/Stair_Light");
+        DatabaseReference
+                motor_LivingRoomReference =
+                FirebaseDatabase.getInstance()
+                        .getReference("ESP8266/SYSTEM/Motor_Living_Room");
+        DatabaseReference
+                motor_BedRoomReference =
+                FirebaseDatabase.getInstance()
+                        .getReference("ESP8266/SYSTEM/Motor_Bed_Room");
 
         // Lưu vào map để xử lý chung
         switchMap.put(switchLed_LR, led_LivingRoomReference);
@@ -63,7 +86,6 @@ public class HomeFragment extends Fragment {
         switchMap.put(switchLed_Stair, led_StairReference);
         switchMap.put(switchMotor_LR, motor_LivingRoomReference);
         switchMap.put(switchMotor_BR, motor_BedRoomReference);
-        switchMap.put(switchDoor, doorReference);
 
         // Thiết lập listener cho tất cả các switch
         setupSwitchListeners();
@@ -152,19 +174,13 @@ public class HomeFragment extends Fragment {
                         isUpdating = false;
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Log.e("FirebaseError", "Failed to read value.", error.toException());
                 }
             };
-
-            // Lưu ValueEventListener để có thể xóa sau này
             valueEventListenerMap.put(switchCompat, valueEventListener);
-
-            // Lắng nghe dữ liệu từ Firebase
             reference.addValueEventListener(valueEventListener);
-
             // Lắng nghe thay đổi từ người dùng
             switchCompat.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (!isUpdating) {
@@ -230,5 +246,72 @@ public class HomeFragment extends Fragment {
         valueEventListenerMap.clear();
 
     }
+    DatabaseReference alertMessageReference = FirebaseDatabase.getInstance().getReference("ESP32/Alert/Message");
+    DatabaseReference getAlertMessageReference = FirebaseDatabase.getInstance().getReference("ESP32/AcessLog/LastAccess");
+    private void setupAlertListener() {
+        alertMessageReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+
+                String message = snapshot.getValue(String.class);
+                if (message != null&&message.equals("co ke xam nhap!"))
+                {
+                    String timestamp = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                    String content = "Có người nhập sai mật khẩu lúc " + timestamp;
+                    sendNotification("Cảnh báo bảo mật", content);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FirebaseError", "Failed to read alert message.", error.toException());
+            }
+        });
+        getAlertMessageReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String message = snapshot.getValue(String.class);
+                if (message != null&&message.equals("Trạng thái mở cửa"))
+                {
+                    sendNotification("Thông báo", "DOOR IS OPENING!");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FirebaseError", "Failed to read alert message.", error.toException());
+            }
+        });
+    }
+    private void sendNotification(String title, String content) {
+        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelId = "alert_channel";
+
+        if (notificationManager == null) {
+            Log.e("Notification", "NotificationManager is null");
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId, "Alert Notifications", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Channel for alert notifications");
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), channelId)
+                .setSmallIcon(android.R.drawable.ic_dialog_alert) // Icon mặc định
+                .setContentTitle(title)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        notificationManager.notify(1, builder.build());
+        Log.d("Notification", "Notification sent: " + title);
+    }
+
+
+
 
 }

@@ -47,17 +47,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mô tả thiết bị hoặc trạng thái của thiết bị"
+                android:text="Bạn có thể đổi mật khẩu tại đây"
                 android:textSize="14sp"
                 android:textColor="#757575" />
         </LinearLayout>
-
-        <!-- Nút bật/tắt thiết bị -->
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/SwitchDoor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:checked="false" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

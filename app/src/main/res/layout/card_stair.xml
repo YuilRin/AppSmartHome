@@ -47,7 +47,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mô tả thiết bị hoặc trạng thái của thiết bị"
+                android:text="Nơi chứa những hình ảnh của bạn"
                 android:textSize="14sp"
                 android:textColor="#757575" />
         </LinearLayout>

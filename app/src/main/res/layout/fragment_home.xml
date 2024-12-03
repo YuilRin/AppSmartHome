@@ -25,9 +25,8 @@
         <!-- Thẻ thiết bị -->
         <include layout="@layout/card_living_room" android:id="@+id/LivingRoom" />
         <include layout="@layout/card_bedroom" android:id="@+id/BedRoom" />
-        <include layout="@layout/card_door" android:id="@+id/Door" />
         <include layout="@layout/card_stair" android:id="@+id/Stair" />
-
+        <include layout="@layout/card_door" android:id="@+id/Door" />
 
     </LinearLayout>
 </ScrollView>

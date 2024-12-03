@@ -31,33 +31,33 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="start"
                 android:text="Kết nối wi-fi"
-                android:textSize="12sp"
                 android:textColor="#757575"
-                android:layout_gravity="start" />
+                android:textSize="12sp" />
 
             <!-- Tên thiết bị -->
             <TextView
                 android:id="@+id/NameTB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="start"
                 android:text="Phòng ngủ"
-                android:textSize="18sp"
-                android:textStyle="bold"
                 android:textColor="#000000"
-                android:layout_gravity="start" />
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <!-- Mô tả thiết bị và Switch nằm cuối -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="22dp"
+                android:layout_height="40dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <!-- Mô tả thiết bị -->
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|start"
                     android:layout_weight="1"
@@ -75,24 +75,24 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="22dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <!-- Mô tả thiết bị -->
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    android:layout_weight="1"
                     android:text="      Quạt"
                     android:textColor="#757575"
-                    android:textSize="14sp"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_weight="1"/>
+                    android:textSize="14sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/SwitchFanBedRoom"
                     android:layout_width="wrap_content"
-                    android:layout_height="33dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:checked="false" />
             </LinearLayout>

@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.appsmarthome.R;
 import com.example.appsmarthome.WorkerClass.MyWorker;
@@ -161,7 +162,9 @@ public class LivingFragment extends Fragment {
                 // Xử lý kết quả giờ và phút
                 long initialDelay = calculateInitialDelay(hours, minutes);
                 Log.d("Time Input", "Hours: " + hours + ", Minutes: " + minutes + ", Initial Delay: " + initialDelay);
-
+                int totalMinutes = (hours * 60) + minutes;
+                String message = "Tổng thời gian chờ: " + totalMinutes + " phút";
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
                 // Tiến hành enqueue work request với thời gian delay tính được
                 OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
                         .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
@@ -186,6 +189,9 @@ public class LivingFragment extends Fragment {
                 long initialDelay = calculateInitialDelay(hours, minutes);
                 Log.d("Time Input", "Hours: " + hours + ", Minutes: " + minutes + ", Initial Delay: " + initialDelay);
 
+                int totalMinutes = (hours * 60) + minutes;
+                String message = "Tổng thời gian chờ: " + totalMinutes + " phút";
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
                 // Tiến hành enqueue work request với thời gian delay tính được
                 OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
                         .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)

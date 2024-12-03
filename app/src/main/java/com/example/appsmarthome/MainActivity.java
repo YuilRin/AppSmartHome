@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Tạo Intent gửi email
-                Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                emailIntent.setData(Uri.parse("mailto:"));  // Đặt địa chỉ mailto
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("message/rfc822");  // Đặt kiểu MIME là email
 
                 // Thiết lập địa chỉ người nhận, chủ đề và nội dung
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"22520762@gm.uit.edu.vn"});
@@ -76,9 +76,9 @@ public class MainActivity extends AppCompatActivity {
                 emailIntent.putExtra(Intent.EXTRA_TEXT, "Body of the email");
 
                 // Kiểm tra xem có ứng dụng email nào để xử lý không
-                if (emailIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(emailIntent);  // Mở ứng dụng gửi email
-                } else {
+                try {
+                    startActivity(Intent.createChooser(emailIntent, "Choose an Email client"));
+                } catch (android.content.ActivityNotFoundException ex) {
                     Snackbar.make(view, "No email app available", Snackbar.LENGTH_LONG).show();
                 }
             }
